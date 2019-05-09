@@ -19,40 +19,39 @@ let getPlanets = () =>
   | Some(planet) => unsafeJsonParse(planet)
   };
 
+let initialDefense = (value: int): Types.defenses(int) => {
+  rocket: value,
+  lightLaser: value,
+  heavyLaser: value,
+  gauss: value,
+  ion: value,
+  plasma: value,
+};
+
 type actions =
   | AddPlanet(string)
   | DeletePlanet(Types.planet);
 
-let initialDefense: Types.defenses = {
-  rocket: 0,
-  lightLaser: 0,
-  heavyLaser: 0,
-  gauss: 0,
-  ion: 0,
-  plasma: 0,
-};
-
 type state = {planets: list(Types.planet)};
+let reducer = (action, state) =>
+  switch (action) {
+  | AddPlanet(value) =>
+    let planets =
+      List.length(state.planets) < 9 ?
+        state.planets
+        @ [{defenses: initialDefense(0), name: value, id: "ponet"}] :
+        state.planets;
+    saveLocally(planets);
+    ReasonReact.Update({planets: planets});
+  | DeletePlanet(planet) =>
+    let planets = List.keep(state.planets, candidate => candidate !== planet);
+    ReasonReact.Update({planets: planets});
+  };
 
 let component = ReasonReact.reducerComponent("Layout");
-
 let make = _children => {
   ...component,
-  reducer: (action, state) =>
-    switch (action) {
-    | AddPlanet(value) =>
-      let planets =
-        List.length(state.planets) < 9 ?
-          state.planets
-          @ [{defenses: initialDefense, name: value, id: "ponet"}] :
-          state.planets;
-      saveLocally(planets);
-      ReasonReact.Update({planets: planets});
-    | DeletePlanet(planet) =>
-      let planets =
-        List.keep(state.planets, candidate => candidate !== planet);
-      ReasonReact.Update({planets: planets});
-    },
+  reducer,
   initialState: () => {planets: getPlanets()},
   render: ({state, send}) => {
     let handleAddPlanet = planetName => send(AddPlanet(planetName));

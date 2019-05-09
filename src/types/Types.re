@@ -4,26 +4,19 @@ type ressources = {
   deuterium: int,
   base: int,
 };
-type defensesModel = {
-  rocket: ressources,
-  lightLaser: ressources,
-  heavyLaser: ressources,
-  gauss: ressources,
-  ion: ressources,
-  plasma: ressources,
+
+type defenses('a) = {
+  rocket: 'a,
+  lightLaser: 'a,
+  heavyLaser: 'a,
+  gauss: 'a,
+  ion: 'a,
+  plasma: 'a,
 };
 
-type defenses = {
-  rocket: int,
-  lightLaser: int,
-  heavyLaser: int,
-  gauss: int,
-  ion: int,
-  plasma: int,
-};
-
+type defensesModel = defenses(ressources);
 type planet = {
   name: string,
   id: string,
-  defenses,
+  defenses: defenses(int),
 };
